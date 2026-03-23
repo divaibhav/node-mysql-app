@@ -1,6 +1,6 @@
 const pool = require('./db/db.js');
 
-const {getAllStudents, getById} = require('./studentQueries.js');
+const {getAllStudents, getById, deleteById} = require('./studentQueries.js');
 
 
 getAllStudents()
@@ -12,14 +12,25 @@ getAllStudents()
         console.error("ERROR: " + err.message);
     });
 
-getById(100)
+getById(1)
 .then((student) =>{
     console.log("get by id");
-    console.log(student[0]);
+    console.log(student);
 })
 .catch(err => {
     console.error("ERROR: " + err.message);
 });
+
+deleteById(1)
+.then(result =>{
+    console.log("Delete by id : ");
+    
+    console.log(result);
+    
+})
+.catch(err=>{
+    console.error("ERROR delete by id: " + err.message);
+})
 
 
 

@@ -13,11 +13,23 @@ async function getAllStudents() {
 
 async function getById(id) {
     try{
+        
+        
         const result = await pool.promise().query('SELECT * FROM students WHERE id = ?', [id]);
-        return result;
+        return result[0];
     }
     catch(err){
          console.log("Error:" + err.message);
     }
 }
-module.exports = {getAllStudents, getById};
+
+async function deleteById(id) {
+    try{
+        const result = await pool.promise().query('DELETE FROM students WHERE id = ?', [id]);
+        return result;
+    }catch(err){
+        console.log("Error:" + err.message);
+    }
+    
+}
+module.exports = {getAllStudents, getById, deleteById};
