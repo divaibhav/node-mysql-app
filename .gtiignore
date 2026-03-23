@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+jspm_packages/
+.pnp.*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+.env
+.env.test
+pids
+*.pid
+*.seed
+
+# Coverage/Build
+coverage/
+dist/
+build/
+.cache/
+
+# IDE/Tooling
+.vscode/
+.idea/
+.eslintcache
