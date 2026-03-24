@@ -1,36 +1,110 @@
 const pool = require('./db/db.js');
+const http = require('http');
+const url = require('url');
+const {getAllStudents, getById, deleteById, createStudent} = require('./studentQueries.js');
+const { log } = require('console');
 
-const {getAllStudents, getById, deleteById} = require('./studentQueries.js');
+const myServer = http.createServer((req, res)=>{
+    const prasedUrl = url.parse(req.url, true);//http://localhost:3000/students/1
+    const path = prasedUrl.pathname;    // /students/1
+    const method = req.method
 
+    console.log(method + "-------" + path);
+    
+     if(method === 'GET' && prasedUrl.query.id){
+       const id = prasedUrl.query.id;
+        deleteById(id)
+        .then((result)=>{
+           if(result.affectedRows == 1){
+            
+            res.writeHead(200, 'application/json');
+            res.end(JSON.stringify("Deleted student successfully"));
+           }
+           else{
+            res.writeHead(404, 'application/json');
+            res.end(JSON.stringify("Student not found"));
+           }
+            
+        })
+        .catch(err => {
+            console.log("ERROR: " + err.message);
+            
+        })
 
-getAllStudents()
-    .then((students) => {
-        console.log(students[0]);
+    }
+    else if(path === '/students' && method === 'GET'){
+        getAllStudents()
+        .then((students) =>{
+            res.writeHead(200, 'application/json');
+            res.end(JSON.stringify(students));
+        })
+        .catch(err=>{
+            console.log("ERROR: " + err.message);
+            
+        })
+    } else if(path.startsWith('/students/') && path.split('/')[2] != '' && method === 'GET'){
         
-    })
-    .catch((err)=> {
-        console.error("ERROR: " + err.message);
-    });
+        
+        const id = path.split('/')[2];
+        getById(id)
+        .then((student)=>{
+            if(!student[0]){
+                console.log('Not found');
+                res.writeHead(404, 'application/plain');
+                res.end(`Not Found with the the given id - ${id}`);
+                
+            }
+            else{
+                res.writeHead(200, 'application/json');
+                res.end(JSON.stringify(student));
+            }
+        })
+        
 
-getById(1)
-.then((student) =>{
-    console.log("get by id");
-    console.log(student);
-})
-.catch(err => {
-    console.error("ERROR: " + err.message);
+    }
+    else{
+        console.log("Else part running");
+        res.writeHead(404, 'application/plain');
+        res.end("Route Not Found");
+    }
+
 });
 
-deleteById(1)
-.then(result =>{
-    console.log("Delete by id : ");
+myServer.listen(3000, "localhost", ()=>{
+    console.log(`server is running on http://localhost:3000`);
     
-    console.log(result);
+});
+
+
+
+// getAllStudents()
+//     .then((students) => {
+//         console.log(students[0]);
+        
+//     })
+//     .catch((err)=> {
+//         console.error("ERROR: " + err.message);
+//     });
+
+// getById(1)
+// .then((student) =>{
+//     console.log("get by id");
+//     console.log(student);
+// })
+// .catch(err => {
+//     console.error("ERROR: " + err.message);
+// });
+
+// deleteById(1)
+// .then(result =>{
+//     console.log("Delete by id : ");
     
-})
-.catch(err=>{
-    console.error("ERROR delete by id: " + err.message);
-})
+//     console.log(result);
+    
+// })
+// .catch(err=>{
+//     console.error("ERROR delete by id: " + err.message);
+// })
 
 
 
